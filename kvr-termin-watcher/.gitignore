@@ -1,0 +1,8 @@
+node_modules/
+dist/
+logs/*
+!logs/.gitkeep
+config.json
+browser-profile/
+watcher.lock
+alert.wav
