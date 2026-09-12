@@ -43,7 +43,30 @@ function releaseLock(): void {
   }
 }
 
+/** `--test-alert`: fire the full alert path (sound, toast, Telegram) once and exit. No browser. */
+async function testAlert(): Promise<void> {
+  const cfg = loadConfig(path.join(ROOT, 'config.json'));
+  const log = createLogger(cfg.logDir);
+  const notifier = createNotifier(cfg, log, { alertWavPath: path.join(ROOT, 'alert.wav') });
+  log.info({ telegram: cfg.telegram.botToken ? 'on' : 'off', sound: cfg.sound, toast: cfg.toast }, 'sending a TEST alert');
+  await notifier.alert('KVR: TEST alert (không có termin thật)', 'availableDays=1 (giả lập). Nếu bạn thấy tin này thì thông báo hoạt động.', cfg.url);
+  log.info('test alert sent. Check: sound, Windows toast, Telegram.');
+}
+
 async function main(): Promise<void> {
+  if (process.argv.includes('--test-alert')) {
+    try {
+      await testAlert();
+    } catch (e) {
+      if (e instanceof ConfigError) {
+        console.error(e.message);
+        process.exit(1);
+      }
+      throw e;
+    }
+    return;
+  }
+
   acquireLock();
   process.on('exit', releaseLock);
 

@@ -319,9 +319,17 @@ export class Watcher {
     this.waiters = this.waiters.filter((w) => w.minSeq !== seq);
   }
 
-  /** Poll (read-only) for a sizeable visible check widget while the calendar response is outstanding. */
+  /**
+   * Poll (read-only) for a sizeable visible check widget while the calendar response is outstanding.
+   * Some widgets show briefly and complete on their own; only after a grace period (half the
+   * response timeout) with no calendar response does a still-visible widget count as a challenge.
+   */
   private async watchForChallenge(page: Page, timeoutMs: number, cancelled: () => boolean): Promise<'challenge' | never> {
     const deadline = Date.now() + timeoutMs;
+    const graceUntil = Date.now() + timeoutMs / 2;
+    while (Date.now() < graceUntil && !cancelled()) {
+      await new Promise((r) => setTimeout(r, 500).unref?.());
+    }
     while (Date.now() < deadline && !cancelled()) {
       if (await this.challengeVisible(page)) return 'challenge';
       // plain timer on purpose: must not touch the interruptible interval sleep

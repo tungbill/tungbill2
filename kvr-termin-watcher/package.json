@@ -11,6 +11,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/src/index.js",
     "gen-alert": "node scripts/gen-alert.js",
+    "test:alert": "npm run build && node dist/src/index.js --test-alert",
     "test": "npm run build && node --test \"dist/test/**/*.test.js\"",
     "test:unit": "npm run build && node --test dist/test/schedule.test.js dist/test/config.test.js",
     "test:integration": "npm run build && node --test dist/test/watcher.integration.test.js"

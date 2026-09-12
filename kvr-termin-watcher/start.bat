@@ -67,7 +67,7 @@ if errorlevel 1 (
 echo.
 echo [INFO] Khoi dong watcher. Nhan Ctrl+C de dung.
 echo.
-node dist\src\index.js
+node dist\src\index.js %*
 set EXIT=%ERRORLEVEL%
 echo.
 if not "%EXIT%"=="0" echo [INFO] Watcher da thoat voi ma %EXIT%.

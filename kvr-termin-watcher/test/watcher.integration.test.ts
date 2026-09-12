@@ -255,8 +255,8 @@ describe('Watcher (headless Chromium + mocked network)', () => {
 });
 
 describe('Watcher: visible check widget', () => {
-  test('a sizeable visible "captcha" iframe pauses early with the challenge reason', async () => {
-    const cfg = makeConfig({ responseTimeoutSec: 30 });
+  test('a sizeable visible "captcha" iframe still there after the grace period pauses before the timeout', async () => {
+    const cfg = makeConfig({ responseTimeoutSec: 8 }); // grace = 4 s, timeout = 8 s
     const mocks = makeMocks(cfg);
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
@@ -277,7 +277,9 @@ describe('Watcher: visible check widget', () => {
     const t0 = Date.now();
     const outcome = await watcher.run(page);
     assert.equal(outcome.reason, 'stopped');
-    assert.ok(Date.now() - t0 < 15_000, 'paused well before the 30 s response timeout');
+    const elapsed = Date.now() - t0;
+    assert.ok(elapsed >= 3_500, `must not pause before the grace period (took ${elapsed} ms)`);
+    assert.ok(elapsed < 7_500, `paused before the 8 s response timeout (took ${elapsed} ms)`);
     assert.equal(mocks.attentions.length, 1);
     assert.match(mocks.attentions[0], /check widget is visible/);
     await ctx.close();

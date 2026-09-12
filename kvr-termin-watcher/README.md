@@ -96,7 +96,36 @@ Console và Telegram báo *"Site is asking for a manual check"* (có ảnh chụ
 
 Làm gì: nhìn vào cửa sổ Chromium, tự xử lý những gì trang yêu cầu (hoặc chỉ cần chờ trang tải xong), rồi quay lại console và **bấm Enter**. Công cụ tải lại và tiếp tục. Nếu chuyện này xảy ra 3 lần trong 1 giờ, công cụ tự **nhân đôi khoảng cách tải lại** và báo cho bạn — đó là dấu hiệu nên chạy chậm hơn nữa hoặc tạm nghỉ.
 
-## 5. Sự cố thường gặp
+## 5. Kiểm thử trước khi dùng thật
+
+Làm theo thứ tự, mỗi bước xác nhận một chuyện khác nhau.
+
+**Bước 1 — Trang có tự tải lịch mà không cần bạn giải captcha không?** (quan trọng nhất)
+
+Chạy `start.bat` bình thường. Nhìn console trong 30 giây đầu:
+
+- Thấy `availableDays=0 nextBookableDate=null` (hoặc số khác 0) → **đạt**. Trang tự tải lịch, ứng dụng đọc được, bạn không phải làm gì. Từ đây trở đi khi có termin, ứng dụng báo ngay mà không cần bạn giải captcha.
+- Thấy `paused: no calendar response within 30 s` hoặc `check widget is visible` → trang đang đòi kiểm tra thủ công. Nhìn cửa sổ Chromium, giải rồi bấm Enter trong console. Nếu **lần nào cũng** bị như vậy, gửi ảnh trong `logs/manual-check-*.png` để chỉnh lại.
+
+Để chạy vài chu kỳ tải lại rồi tắt bằng `Ctrl+C`. Mỗi chu kỳ phải in `availableDays=` rồi `next reload in ...`, không có dòng `paused`.
+
+**Bước 2 — Chuông, toast, Telegram có tới không?**
+
+```
+start.bat --test-alert
+```
+(hoặc `npm run test:alert`). Lệnh này **không mở trình duyệt**, chỉ bắn một thông báo giả "KVR: TEST alert" qua đúng ba kênh như khi có termin thật, rồi thoát. Kiểm tra: có tiếng chuông 3 lần, có toast Windows, có tin Telegram kèm link. Kênh nào thiếu thì xem bảng sự cố ở mục 6.
+
+**Bước 3 — Muốn thấy toàn bộ luồng "có termin" mà không chờ termin thật?**
+
+```
+npm test
+```
+Bộ test tự mở Chromium ẩn, giả lập phản hồi `available-calendar` có một ngày trống, và kiểm tra rằng: cảnh báo được bắn, Telegram (giả lập) nhận đúng link, việc tải lại **dừng** sau cảnh báo, các trường hợp tạm dừng / 429 hoạt động. Kết quả mong đợi: `# fail 0`.
+
+**Bước 4 — Chạy thật.** Để `start.bat` chạy trong giờ theo dõi. Khi có termin: chuông + toast + Telegram, Chromium được đưa lên trước. Bạn tự vào giải captcha nếu trang hỏi, tự chọn ngày và đặt.
+
+## 6. Sự cố thường gặp
 
 | Hiện tượng | Cách xử lý |
 |---|---|
@@ -111,7 +140,7 @@ Làm gì: nhìn vào cửa sổ Chromium, tự xử lý những gì trang yêu c
 | Muốn xem log chi tiết | `logs/watcher.log` (JSON, mỗi dòng một sự kiện). Đặt `set LOG_LEVEL=debug` trước khi chạy để thấy cả phản hồi lịch. |
 | Máy ngủ (sleep) | Windows ngủ thì công cụ cũng dừng. Tắt chế độ ngủ trong giờ theo dõi. |
 
-## 6. Dành cho người phát triển
+## 7. Dành cho người phát triển
 
 ```
 npm install
