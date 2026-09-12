@@ -1,0 +1,13 @@
+{
+  "url": "https://stadt.muenchen.de/buergerservice/terminvereinbarung.html#/services/10339028/locations/10461",
+  "hotWindows": [
+    { "start": "07:10", "end": "07:50", "intervalSec": 20 },
+    { "start": "12:00", "end": "13:45", "intervalSec": 30 }
+  ],
+  "coldIntervalSec": 300,
+  "activeHours": { "start": "07:00", "end": "16:00" },
+  "weekdaysOnly": true,
+  "telegram": { "botToken": "", "chatId": "" },
+  "sound": true,
+  "toast": true
+}

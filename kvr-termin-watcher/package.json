@@ -1,0 +1,27 @@
+{
+  "name": "kvr-termin-watcher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Passive page-refresh-and-notify helper for the Munich KVR appointment page. It only watches; you book.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/src/index.js",
+    "gen-alert": "node scripts/gen-alert.js",
+    "test": "npm run build && node --test \"dist/test/**/*.test.js\"",
+    "test:unit": "npm run build && node --test dist/test/schedule.test.js dist/test/config.test.js",
+    "test:integration": "npm run build && node --test dist/test/watcher.integration.test.js"
+  },
+  "dependencies": {
+    "node-notifier": "^10.0.1",
+    "pino": "^9.6.0",
+    "playwright": "1.56.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.6.0"
+  }
+}
